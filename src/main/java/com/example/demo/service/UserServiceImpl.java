@@ -22,19 +22,20 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	
+	@Override
 	public User saveUser(User user) {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userRepository.save(user);
 	}
 	
-
-	public Optional<User> findByUsername(String username) {
-		return userRepository.findByUsername(username);
-	}
-
 	public List<User> findAllUsers() {
 		return userRepository.findAll();
+	}
+
+	@Override
+	public User findByUsername(String username) {
+		// TODO Auto-generated method stub
+		return userRepository.findByUsername(username);
 	}
 	
 
