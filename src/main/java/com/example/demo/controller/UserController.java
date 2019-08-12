@@ -5,17 +5,22 @@ import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.jwt.JwtTokenProvider;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
 @RestController
 public class UserController {
+	
+	@Autowired
+    private JwtTokenProvider jwtTokenProvider;
 	
 	@Autowired
 	private UserService userService;
@@ -39,7 +44,10 @@ public class UserController {
 			return ResponseEntity.ok(principal);
 		}
 		
-		return new ResponseEntity<>(userService.findByUsername(principal.getName()),  HttpStatus.OK);
+		 UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) principal;
+	        User user = userService.findByUsername(authenticationToken.getName());
+	        user.setToken(jwtTokenProvider.generateToken(authenticationToken));
+		return new ResponseEntity<>(user,  HttpStatus.OK);
 		
 	}
 	
